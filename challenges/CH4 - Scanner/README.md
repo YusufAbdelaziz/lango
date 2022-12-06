@@ -8,7 +8,7 @@
 
 ---
 
-2. **Aside from separating tokens—distinguishing print foo from printfoo—spaces aren’t used for much in most languages. However, in a couple of dark corners, a space does affect how code is parsed in CoffeeScript, Ruby, and the C preprocessor. Where and what effect does it have in each of those languages?**
+2. **Aside from separating tokens—distinguishing `print foo` from `printfoo`—spaces aren’t used for much in most languages. However, in a couple of dark corners, a space does affect how code is parsed in CoffeeScript, Ruby, and the C preprocessor. Where and what effect does it have in each of those languages?**
 
 <details>
 <summary>CoffeeScript</summary>
