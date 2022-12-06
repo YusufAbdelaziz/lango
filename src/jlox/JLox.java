@@ -1,45 +1,73 @@
-package joex;
+package jlox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+// import java.nio.file.Paths;
 import java.util.List;
 
-class Joex {
+import jlox.scanner.Scanner;
+import jlox.scanner.Token;
 
+public class JLox {
+
+  /**
+   * Used to ensure that we don't execute code that has a known error.
+   */
   static boolean hadError = false;
 
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {
-      System.out.println("Usage: joex [script]");
+      System.out.println("Usage: jlox [script]");
       System.exit(64);
     } else if (args.length == 1) {
       runFile(args[0]);
     } else {
+      // Run the REPL.
       runPrompt();
     }
   }
 
+  /**
+   * Reads one line at a time and executes that line immediately (REPL).
+   * 
+   * @param path : The path given by the user which has Lox's source code.
+   * @throws IOException
+   */
   private static void runFile(String path) throws IOException {
-    byte[] bytes = Files.readAllBytes(Paths.get(path));
+    // Paths.get(path);
+    byte[] bytes = Files.readAllBytes(Path.of(path));
     run(new String(bytes, Charset.defaultCharset()));
     if (hadError)
       System.exit(65);
   }
 
+  /**
+   * Reads one line at a time and executes that line immediately (REPL).
+   * 
+   * @throws IOException
+   */
   private static void runPrompt() throws IOException {
     InputStreamReader input = new InputStreamReader(System.in);
     BufferedReader reader = new BufferedReader(input);
 
     while (true) {
-      System.out.println("> ");
+      System.out.print("> ");
+      /**
+       * readLine reads a line which the user enters.
+       *
+       * In case the user decided to kill the CMD, the user would type CTRL + C which
+       * signals an "end-of-file" (EOF) that results in a null line.
+       */
       String line = reader.readLine();
       if (line == null)
         break;
       run(line);
+      // The flag is reset for each loop because the REPL shouldn't be terminated when
+      // the user makes a mistake.
       hadError = false;
     }
   }
@@ -52,7 +80,15 @@ class Joex {
     }
   }
 
-  static void error(int line, String message) {
+  // TODO : Add the beginning and end column.
+  /**
+   * Notifies the user about syntax error that occurred at a specific line
+   * number using a message.
+   * 
+   * @param line
+   * @param message
+   */
+  public static void error(int line, String message) {
     report(line, "", message);
   }
 
