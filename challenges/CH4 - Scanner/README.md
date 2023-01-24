@@ -83,3 +83,10 @@ So for example :
 The first is a marco with replacement list whereas the second is a function-like macro that takes a parameter and expands it into `p` which is the parameter.
 
 </details>
+
+---
+
+3. **Our scanner here, like most, discards comments and whitespace since those aren’t needed by the parser. Why might you want to write a scanner that does not discard those? What would it be useful for?**
+
+- In case of whitespaces, it's crucial not to discard those because we may want to implement a language that is similar to Python or Haskell where indentation level should be somehow stored (we may not store the whitespaces themselves but the indentation level).
+- In case of comments, it's useful to store those because we may have a documentation generator (similar to Javadoc or PHPDoc) that generates a styled docs using those comments.
