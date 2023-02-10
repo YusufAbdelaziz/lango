@@ -9,10 +9,10 @@ package jlox.scanner;
  * @param line    The line number at which the token appears.
  */
 public class Token {
-  final String lexeme;
-  final TokenType type;
-  final Object literal;
-  final int line;
+  public final String lexeme;
+  public final TokenType type;
+  public final Object literal;
+  public final int line;
 
   public Token(String lexeme, TokenType type, Object literal, int line) {
     this.lexeme = lexeme;
