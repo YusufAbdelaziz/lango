@@ -35,7 +35,7 @@ public class GenerateAst {
     writer.println("import java.util.List;");
     writer.println("import jlox.scanner.Token;");
     writer.println();
-    writer.println("abstract class " + baseName + " {");
+    writer.println("public abstract class " + baseName + " {");
 
     defineVisitor(writer, baseName, exprTypes);
     // Base accept method that each expression type should implement.
@@ -60,10 +60,10 @@ public class GenerateAst {
    * @param fieldList fields for each subclass.
    */
   private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
-    writer.println(" static class " + className + " extends " + baseName + " {");
+    writer.println("public static class " + className + " extends " + baseName + " {");
 
     // Constructor of subclass.
-    writer.println("    " + className + "(" + fieldList + ") {");
+    writer.println("    " + "public " + className + "(" + fieldList + ") {");
 
     // Assign object fields to constructor's parameters.
 
