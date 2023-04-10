@@ -27,15 +27,18 @@ public class Interpreter implements Expr.Visitor<Object> {
         return (double) left - (double) right;
       case SLASH:
         checkNumberOperands(expr.operator, right, left);
+        if ((double) right == 0) {
+          throw new RuntimeError(expr.operator, "You can't divide by zero");
+        }
         return (double) left / (double) right;
       case STAR:
         checkNumberOperands(expr.operator, right, left);
         return (double) left * (double) right;
       case PLUS:
-        if (left instanceof String && right instanceof String) {
-          return (String) left + (String) right;
-        }
+        if (left instanceof String || right instanceof String) {
+          return stringify(left) + stringify(right);
 
+        }
         if (left instanceof Double && right instanceof Double) {
           return (double) left + (double) right;
         }
