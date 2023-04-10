@@ -10,16 +10,19 @@ import java.nio.file.Path;
 import java.util.List;
 
 import jlox.parser.Parser;
+import jlox.parser.RuntimeError;
 import jlox.scanner.Scanner;
 import jlox.scanner.Token;
 import jlox.scanner.TokenType;
 
 public class JLox {
+  private static final Interpreter interpreter = new Interpreter();
 
   /**
    * Used to ensure that we don't execute code that has a known error.
    */
   static boolean hadError = false;
+  static boolean hadRuntimeError = false;
 
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {
@@ -45,6 +48,8 @@ public class JLox {
     run(new String(bytes, Charset.defaultCharset()));
     if (hadError)
       System.exit(65);
+    if (hadRuntimeError)
+      System.exit(70);
   }
 
   /**
@@ -84,10 +89,11 @@ public class JLox {
     if (hadError)
       return;
 
-    System.out.println(new AstPrinter().print(expression));
-    for (Token token : tokens) {
-      System.out.println(token);
-    }
+    interpreter.interpret(expression);
+    // System.out.println(new AstPrinter().print(expression));
+    // for (Token token : tokens) {
+    // System.out.println(token);
+    // }
   }
 
   // TODO : Add the beginning and end column.
@@ -113,5 +119,11 @@ public class JLox {
     } else {
       report(token.line, " at '" + token.lexeme + "'", message);
     }
+  }
+
+  public static void runtimeError(RuntimeError error) {
+    System.err.println(error.getMessage() +
+        "\n[line " + error.token.line + "]");
+    hadRuntimeError = true;
   }
 }
