@@ -16,7 +16,7 @@
 
 3. **What happens right now if you divide a number by zero? What do you think should happen? Justify your choice. How do other languages you know handle division by zero, and why do they make the choices they do? <br/> <br/>Change the implementation in visitBinaryExpr() to detect and report a runtime error for this case.**
 
-- Currently, it returns "Infinity".
+- Currently, it returns "Infinity", "-Infinity", or NaN.
 - I think we should throw a runtime exception because doing arithmetic operations on infinity would screw up the operations.
 - Taking Python3 as an example, dividing by zero raises `ZeroDivisionError`.
 - Meanwhile in Java, you can't divide an integer zero (0 not 0.0) as such values like (Infinity, -Infinity, or NaN) don't exist. Whereas if one of the operands was a double value, the IEEE 754 floating-point specifications have specific values for Infinity, -Infinity, and NaN. So I think Java is just following the specifications.
