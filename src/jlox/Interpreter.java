@@ -9,7 +9,6 @@ import jlox.Stmt.Print;
 import jlox.Stmt.Var;
 import jlox.main.JLox;
 import jlox.scanner.Token;
-import jlox.scanner.TokenType;
 import jlox.parser.*;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {

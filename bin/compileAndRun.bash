@@ -1,5 +1,7 @@
-# Redirect compiled files to classes folder, remember to add it to gitignore.
+# Start from the root folder (project's).
 
+# Redirect compiled files to classes folder, remember to add it to gitignore.
+cd src
 javac -d ./classes jlox/main/JLox.java 
 
 # Use this to fire the REPL
@@ -7,3 +9,5 @@ javac -d ./classes jlox/main/JLox.java
 
 # Use this to run code from a script file.
 java -cp ./classes jlox.main.JLox ../script.txt
+
+cd ..

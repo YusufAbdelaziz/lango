@@ -1,6 +1,5 @@
 package jlox;
 
-import java.util.List;
 import jlox.scanner.Token;
 
 public abstract class Expr {
