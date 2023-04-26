@@ -3,7 +3,7 @@ package jlox.scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-import jlox.JLox;
+import jlox.main.JLox;
 
 import java.util.*;
 

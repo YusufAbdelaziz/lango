@@ -1,4 +1,4 @@
-package jlox;
+package jlox.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import java.nio.file.Path;
 // import java.nio.file.Paths;
 import java.util.List;
 
+import jlox.Interpreter;
+import jlox.Stmt;
 import jlox.parser.Parser;
 import jlox.parser.RuntimeError;
 import jlox.scanner.Scanner;
@@ -83,13 +85,13 @@ public class JLox {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
     Parser parser = new Parser(tokens);
-    Expr expression = parser.parse();
+    List<Stmt> statements = parser.parse();
 
     // Stop if there was a syntax error.
     if (hadError)
       return;
 
-    interpreter.interpret(expression);
+    interpreter.interpret(statements);
     // System.out.println(new AstPrinter().print(expression));
     // for (Token token : tokens) {
     // System.out.println(token);
