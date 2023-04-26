@@ -3,7 +3,7 @@ package jlox.scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-import jlox.JLox;
+import jlox.main.JLox;
 
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class Scanner {
    */
   private final List<Token> tokens = new ArrayList<>();
   /**
-   * Points to the character that currently be considered.
+   * Points to the character that is currently be considered.
    */
   private int current = 0;
   /**
@@ -28,8 +28,8 @@ public class Scanner {
    */
   private int start = 0;
   /**
-   * Tracks what source line [current] is on so we can produce tokens that know
-   * their location.
+   * Tracks what source line, which [current] resides on, so we can produce tokens
+   * that know their location.
    */
   private int line = 1;
   /**

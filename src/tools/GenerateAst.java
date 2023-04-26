@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Used as a AST generator to generate various tree types.
+ * Used as a AST generator to gene rate various tree types.
  */
 public class GenerateAst {
   public static void main(String[] args) throws IOException {
@@ -18,11 +18,18 @@ public class GenerateAst {
     String outputDir = args[0];
 
     defineAst(outputDir, "Expr",
-        Arrays.asList(
+        Arrays.asList("Assign : Token name, Expr value",
             "Binary : Expr left, Token operator, Expr right",
             "Grouping : Expr expression",
             "Literal : Object value",
-            "Unary : Token operator, Expr right"));
+            "Unary : Token operator, Expr right",
+            "Variable : Token name"));
+
+    defineAst(outputDir, "Stmt",
+        Arrays.asList("Block : List<Stmt> statements",
+            "Expression : Expr expression",
+            "Print : Expr expression",
+            "Var   : Token name, Expr initializer"));
 
   }
 
@@ -85,7 +92,7 @@ public class GenerateAst {
     // Fields of the subclass.
     writer.println();
     for (String field : fields) {
-      writer.println("    final " + field + ";");
+      writer.println("public" + "    final " + field + ";");
     }
 
     writer.println("    }");

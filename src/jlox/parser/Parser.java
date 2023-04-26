@@ -1,22 +1,38 @@
 package jlox.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jlox.scanner.*;
 import jlox.*;
+import jlox.main.JLox;
 
 /**
  * Constructs the syntax tree from our language's grammar.
  * 
  * This class consumes tokens to match it to the correct expression grammar.
  * 
- * expression → equality ;
+ * 
+ * program → declaration* EOF ;
+ * declaration -> varDecl | statement;
+ * varDecl -> "var" IDENTIFIER ( "=" expression )? ";" ;
+ * 
+ * statement → exprStmt
+ * | printStmt
+ * | block;
+ * block → "{" declaration* "}" ;
+ * exprStmt → expression ";" ;
+ * printStmt → "print" expression ";" ;
+ * 
+ * expression → assignment;
+ * assignment -> IDENTIFIER "=" assignment | equality;
  * equality → comparison ( ( "!=" | "==" ) comparison )* ;
  * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
  * term → factor ( ( "-" | "+" ) factor )* ;
  * factor → unary ( ( "/" | "*" ) unary )* ;
  * unary → ( "!" | "-" ) unary | primary ;
- * primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+ * primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" |
+ * IDENTIFIER ;
  */
 
 public class Parser {
@@ -43,16 +59,101 @@ public class Parser {
    * 
    * @return
    */
-  public Expr parse() {
+  public List<Stmt> parse() {
+    // try {
+    // return expression();
+    // } catch (ParseError error) {
+    // return null;
+    // }
+    List<Stmt> statements = new ArrayList<>();
+    while (!isAtEnd()) {
+      statements.add(declaration());
+    }
+
+    return statements;
+  }
+
+  private Stmt declaration() {
     try {
-      return expression();
+      if (match(TokenType.VAR))
+        return varDeclaration();
+
+      return statement();
     } catch (ParseError error) {
+      synchronize();
       return null;
     }
   }
 
+  private Stmt varDeclaration() {
+    Token name = consume(TokenType.IDENTIFIER, "Expect a variable name.");
+    Expr initializer = null;
+    if (match(TokenType.EQUAL)) {
+      initializer = expression();
+    }
+
+    consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+    return new Stmt.Var(name, initializer);
+  }
+
+  private Stmt statement() {
+    if (match(TokenType.PRINT))
+      return printStatement();
+    if (match(TokenType.LEFT_BRACE))
+      return new Stmt.Block(block());
+
+    return expressionStatement();
+  }
+
+  private List<Stmt> block() {
+    List<Stmt> statements = new ArrayList<>();
+
+    while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+      statements.add(declaration());
+    }
+
+    consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+    return statements;
+  }
+
+  private Stmt printStatement() {
+    /*
+     * Note that the match method already consumed the PRINT token, so what is
+     * remaining the expression after it.
+     */
+    Expr value = expression();
+    consume(TokenType.SEMICOLON, "Expect ';' after value.");
+    return new Stmt.Print(value);
+  }
+
+  private Stmt expressionStatement() {
+    Expr expr = expression();
+    consume(TokenType.SEMICOLON, "Expect ';' after value.");
+    return new Stmt.Expression(expr);
+  }
+
   private Expr expression() {
-    return equality();
+
+    return assignment();
+  }
+
+  private Expr assignment() {
+    Expr expr = equality();
+
+    /// We want to make assignment expression like x = y = 5; valid.
+    if (match(TokenType.EQUAL)) {
+      Token equals = previous();
+      Expr value = assignment();
+
+      if (expr instanceof Expr.Variable) {
+        Token name = ((Expr.Variable) expr).name;
+        return new Expr.Assign(name, value);
+      }
+
+      error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
   }
 
   /**
@@ -133,6 +234,10 @@ public class Parser {
       Expr expr = expression();
       consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
       return new Expr.Grouping(expr);
+    }
+
+    if (match(TokenType.IDENTIFIER)) {
+      return new Expr.Variable(previous());
     }
 
     throw error(peek(), "Expected expression.");

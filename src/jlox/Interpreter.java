@@ -1,19 +1,33 @@
 package jlox;
 
+import java.util.List;
+
 import jlox.Expr.*;
+import jlox.Stmt.Block;
+import jlox.Stmt.Expression;
+import jlox.Stmt.Print;
+import jlox.Stmt.Var;
+import jlox.main.JLox;
 import jlox.scanner.Token;
 import jlox.scanner.TokenType;
 import jlox.parser.*;
 
-public class Interpreter implements Expr.Visitor<Object> {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
-  void interpret(Expr expr) {
+  private Environment environment = new Environment();
+
+  public void interpret(List<Stmt> statements) {
     try {
-      Object value = evaluate(expr);
-      System.out.println(stringify(value));
+      for (Stmt statement : statements) {
+        execute(statement);
+      }
     } catch (RuntimeError error) {
       JLox.runtimeError(error);
     }
+  }
+
+  private void execute(Stmt stmt) {
+    stmt.accept(this);
   }
 
   @Override
@@ -27,15 +41,18 @@ public class Interpreter implements Expr.Visitor<Object> {
         return (double) left - (double) right;
       case SLASH:
         checkNumberOperands(expr.operator, right, left);
+        if ((double) right == 0) {
+          throw new RuntimeError(expr.operator, "You can't divide by zero");
+        }
         return (double) left / (double) right;
       case STAR:
         checkNumberOperands(expr.operator, right, left);
         return (double) left * (double) right;
       case PLUS:
-        if (left instanceof String && right instanceof String) {
-          return (String) left + (String) right;
-        }
+        if (left instanceof String || right instanceof String) {
+          return stringify(left) + stringify(right);
 
+        }
         if (left instanceof Double && right instanceof Double) {
           return (double) left + (double) right;
         }
@@ -151,5 +168,69 @@ public class Interpreter implements Expr.Visitor<Object> {
       return (boolean) object;
 
     return true;
+  }
+
+  @Override
+  public Void visitExpressionStmt(Expression stmt) {
+    evaluate(stmt.expression);
+    return null;
+  }
+
+  @Override
+  public Void visitPrintStmt(Print stmt) {
+    Object value = evaluate(stmt.expression);
+    System.out.println(stringify(value));
+    return null;
+  }
+
+  @Override
+  public Void visitVarStmt(Var stmt) {
+    Object value = null;
+    if (stmt.initializer != null) {
+      value = evaluate(stmt.initializer);
+    }
+
+    environment.define(stmt.name.lexeme, value);
+    return null;
+  }
+
+  @Override
+  public Object visitVariableExpr(Variable expr) {
+    return environment.get(expr.name);
+  }
+
+  @Override
+  public Object visitAssignExpr(Assign expr) {
+    Object value = evaluate(expr.value);
+    environment.assign(expr.name, value);
+    /**
+     * Assigned value is returned because assignment is an expression that can be
+     * nested inside other expressions.
+     * 
+     * ```
+     * var a = 4;
+     * print a = 5; // "5"
+     * ```
+     */
+    return value;
+  }
+
+  @Override
+  public Void visitBlockStmt(Block stmt) {
+    executeBlock(stmt.statements, new Environment(environment));
+    return null;
+  }
+
+  private void executeBlock(List<Stmt> statements, Environment environment) {
+    Environment previous = this.environment;
+
+    try {
+      this.environment = environment;
+      for (Stmt stmt : statements) {
+        execute(stmt);
+      }
+    } finally {
+      this.environment = previous;
+    }
   }
 }
