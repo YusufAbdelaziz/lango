@@ -2,6 +2,7 @@ package jlox.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import jlox.scanner.*;
 import jlox.*;
@@ -18,14 +19,24 @@ import jlox.main.JLox;
  * varDecl -> "var" IDENTIFIER ( "=" expression )? ";" ;
  * 
  * statement → exprStmt
- * | printStmt
- * | block;
+ * | forStmt
+ * | printStm* | block
+ * | ifStmt
+ * | whileStmt;
+ * 
+ * forStmt -> "for" "(" (varDecl | exprStmt | ";") expression? ";" expression?
+ * ")" statement ;
+ * whileStmt -> "while" "(" expression ")" statement;
+ * ifStmt -> "if" "(" expression ")" statement ("else" statement)?;
  * block → "{" declaration* "}" ;
  * exprStmt → expression ";" ;
  * printStmt → "print" expression ";" ;
  * 
  * expression → assignment;
- * assignment -> IDENTIFIER "=" assignment | equality;
+ * assignment -> IDENTIFIER "=" assignment | logic_or;
+ * 
+ * logic_or -> logic_and ("or" logic_and)*
+ * logic_and -> equality ("and" equality)*
  * equality → comparison ( ( "!=" | "==" ) comparison )* ;
  * comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
  * term → factor ( ( "-" | "+" ) factor )* ;
@@ -97,12 +108,95 @@ public class Parser {
   }
 
   private Stmt statement() {
+    if (match(TokenType.IF))
+      return ifStatement();
+    if (match(TokenType.FOR))
+      return forStatement();
+    if (match(TokenType.WHILE))
+      return whileStatement();
     if (match(TokenType.PRINT))
       return printStatement();
     if (match(TokenType.LEFT_BRACE))
       return new Stmt.Block(block());
 
     return expressionStatement();
+  }
+
+  private Stmt forStatement() {
+    consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+
+    Stmt initializer;
+
+    if (match(TokenType.SEMICOLON)) {
+      initializer = null;
+    } else if (match(TokenType.VAR)) {
+      initializer = varDeclaration();
+    } else {
+      initializer = expressionStatement();
+    }
+
+    Expr condition = null;
+
+    if (!check(TokenType.SEMICOLON)) {
+      condition = expression();
+    }
+
+    consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+    Expr increment = null;
+    if (!check(TokenType.RIGHT_PAREN)) {
+      increment = expression();
+    }
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+
+    Stmt body = statement();
+
+    // If increment is not null, we create a block of statements where the increment
+    // statement should be the last
+    // statement to be executed after each iteration.
+    if (increment != null) {
+      body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+    }
+
+    /// If condition is omitted, a true is placed to make an infinite loop.
+    if (condition == null) {
+      condition = new Expr.Literal(true);
+    }
+
+    body = new Stmt.While(condition, body);
+
+    /// If there's an initializer statement, create a new block that has the
+    /// initializer statement first followed by
+    /// statements exist in the body.
+    if (initializer != null) {
+      body = new Stmt.Block(Arrays.asList(initializer, body));
+    }
+
+    return body;
+  }
+
+  private Stmt whileStatement() {
+    consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+    Expr condition = expression();
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
+    Stmt body = statement();
+
+    return new Stmt.While(condition, body);
+  }
+
+  private Stmt ifStatement() {
+
+    consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+    Expr condition = expression();
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+    Stmt thenBranch = statement();
+    Stmt elseBranch = null;
+    if (match(TokenType.ELSE)) {
+      elseBranch = statement();
+    }
+
+    return new Stmt.If(condition, thenBranch, elseBranch);
   }
 
   private List<Stmt> block() {
@@ -138,7 +232,7 @@ public class Parser {
   }
 
   private Expr assignment() {
-    Expr expr = equality();
+    Expr expr = or();
 
     /// We want to make assignment expression like x = y = 5; valid.
     if (match(TokenType.EQUAL)) {
@@ -151,6 +245,31 @@ public class Parser {
       }
 
       error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
+  }
+
+  private Expr or() {
+    Expr expr = and();
+
+    while (match(TokenType.OR)) {
+      Token operator = previous();
+      Expr right = and();
+      expr = new Expr.Logical(expr, operator, right);
+    }
+
+    return expr;
+  }
+
+  private Expr and() {
+    Expr expr = equality();
+
+    while (match(TokenType.AND)) {
+      Token operator = previous();
+      Expr right = equality();
+
+      expr = new Expr.Logical(expr, operator, right);
     }
 
     return expr;

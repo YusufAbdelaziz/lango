@@ -1,5 +1,6 @@
 package jlox;
 
+import java.util.List;
 import jlox.scanner.Token;
 
 public abstract class Expr {
@@ -11,6 +12,8 @@ public abstract class Expr {
     R visitGroupingExpr(Grouping expr);
 
     R visitLiteralExpr(Literal expr);
+
+    R visitLogicalExpr(Logical expr);
 
     R visitUnaryExpr(Unary expr);
 
@@ -75,6 +78,23 @@ public abstract class Expr {
     }
 
     public final Object value;
+  }
+
+  public static class Logical extends Expr {
+    public Logical(Expr left, Token operator, Expr right) {
+      this.left = left;
+      this.operator = operator;
+      this.right = right;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitLogicalExpr(this);
+    }
+
+    public final Expr left;
+    public final Token operator;
+    public final Expr right;
   }
 
   public static class Unary extends Expr {

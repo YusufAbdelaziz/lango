@@ -5,10 +5,13 @@ import java.util.List;
 import jlox.Expr.*;
 import jlox.Stmt.Block;
 import jlox.Stmt.Expression;
+import jlox.Stmt.If;
 import jlox.Stmt.Print;
 import jlox.Stmt.Var;
+import jlox.Stmt.While;
 import jlox.main.JLox;
 import jlox.scanner.Token;
+import jlox.scanner.TokenType;
 import jlox.parser.*;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
@@ -155,7 +158,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   /**
    * Checks if the [object] is truthful.
    * 
-   * Note that only false and nil are falsy values
+   * Note that only 'false' and 'nil' are falsy values
    * 
    * @param object
    * @return
@@ -231,5 +234,38 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     } finally {
       this.environment = previous;
     }
+  }
+
+  @Override
+  public Void visitIfStmt(If stmt) {
+    if (isTruthy(evaluate(stmt.condition))) {
+      execute(stmt.thenBranch);
+    } else if (stmt.elseBranch != null) {
+      execute(stmt.elseBranch);
+    }
+
+    return null;
+  }
+
+  @Override
+  public Object visitLogicalExpr(Logical expr) {
+    Object left = evaluate(expr.left);
+    if (expr.operator.type == TokenType.OR) {
+      if (isTruthy(left))
+        return left;
+    } else {
+      if (!isTruthy(left))
+        return left;
+    }
+
+    return evaluate(expr.right);
+  }
+
+  @Override
+  public Void visitWhileStmt(Stmt.While stmt) {
+    while (isTruthy(evaluate(stmt.condition))) {
+      execute(stmt.body);
+    }
+    return null;
   }
 }
