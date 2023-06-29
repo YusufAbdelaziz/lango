@@ -8,6 +8,6 @@ javac -d ./classes jlox/main/JLox.java
 # java -cp ./classes jlox.main.JLox
 
 # Use this to run code from a script file.
-java -cp ./classes jlox.main.JLox ../script.txt
+java -cp ./classes jlox.main.JLox ../script.lox
 
 cd ..
