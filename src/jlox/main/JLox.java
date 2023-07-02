@@ -16,6 +16,7 @@ import jlox.parser.RuntimeError;
 import jlox.scanner.Scanner;
 import jlox.scanner.Token;
 import jlox.scanner.TokenType;
+import jlox.Resolver;
 
 public class JLox {
   private static final Interpreter interpreter = new Interpreter();
@@ -87,9 +88,17 @@ public class JLox {
     Parser parser = new Parser(tokens);
     List<Stmt> statements = parser.parse();
 
-    // Stop if there was a syntax error.
+    // Stop if there is a syntax error.
     if (hadError)
       return;
+
+    Resolver resolver = new Resolver(interpreter);
+
+    // Stop if there's a resolution error.
+    if (hadError)
+      return;
+
+    resolver.resolve(statements);
 
     interpreter.interpret(statements);
     // System.out.println(new AstPrinter().print(expression));

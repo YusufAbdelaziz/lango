@@ -53,7 +53,7 @@ import jlox.main.JLox;
  * unary → ( "!" | "-" ) unary | call ;
  * call -> primary ( "(" arguments? ")" )*
  * primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" |
- * IDENTIFIER ;
+ * IDENTIFIER;
  */
 
 public class Parser {
