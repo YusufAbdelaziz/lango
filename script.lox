@@ -84,18 +84,79 @@
 // return;
 // print "hey";
 
-class Animal {
-  init(name, type, age) {
-    this.name = name;
-    this.type = type;
-    this.age = age;
-  }
+// class Animal {
+//   init(name, type, age) {
+//     this.name = name;
+//     this.type = type;
+//     this.age = age;
+//   }
 
-  printInfo() {
-    print "My name is " + this.name + " and my type is " + this.type + " and my age is " + this.age;
+//   printInfo() {
+//     print "My name is " + this.name + " and my type is " + this.type + " and my age is " + this.age;
+//   }
+// }
+
+// var cat = Animal("Tota", "Cat", 2.5);
+
+// cat.printInfo();
+
+// class Doughnut {
+//   cook() {
+//     print "Fry until golden brown.";
+//   }
+// }
+
+// class BostonCream < Doughnut {}
+
+// BostonCream().cook();
+
+// class Doughnut {
+//   cook() {
+//     print "Fry until golden brown.";
+//   }
+// }
+
+// class BostonCream < Doughnut {
+//   cook() {
+//     super.cook();
+//     print "Pipe full of custard and coat with chocolate.";
+//   }
+// }
+
+// BostonCream().cook();
+
+class A {
+  method() {
+    print "A method";
   }
 }
 
-var cat = Animal("Tota", "Cat", 2.5);
+// class B < A {
+//   init(testProp, testProp2){
+//     this.testProp = testProp;
+//     this.testProp2 = testProp2;
+//   }
 
-cat.printInfo();
+//   method() {
+//     print "B method";
+//   }
+
+//   test() {
+//     super.method();
+//   }
+// }
+
+// class C < B {
+//   init() {
+//     super.init("test", "test from c");
+//   }
+// }
+
+// print C().testProp2;
+
+class Eclair {
+  cook() {
+    super.cook();
+    print "Pipe full of crème pâtissière.";
+  }
+}
