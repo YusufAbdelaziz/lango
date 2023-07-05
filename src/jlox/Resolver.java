@@ -8,12 +8,16 @@ import java.util.Stack;
 import jlox.Expr.Assign;
 import jlox.Expr.Binary;
 import jlox.Expr.Call;
+import jlox.Expr.Get;
 import jlox.Expr.Grouping;
 import jlox.Expr.Literal;
 import jlox.Expr.Logical;
+import jlox.Expr.Set;
+import jlox.Expr.This;
 import jlox.Expr.Unary;
 import jlox.Expr.Variable;
 import jlox.Stmt.Block;
+import jlox.Stmt.Class;
 import jlox.Stmt.Expression;
 import jlox.Stmt.Function;
 import jlox.Stmt.If;
@@ -28,7 +32,14 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
   private enum FunctionType {
     NONE,
-    FUNCTION
+    FUNCTION,
+    INITIALIZER,
+    METHOD
+  }
+
+  private enum ClassType {
+    NONE,
+    CLASS
   }
 
   private final Interpreter interpreter;
@@ -43,9 +54,14 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
    */
   private final Stack<Map<String, Boolean>> scopes = new Stack<>();
   /**
-   * Defines whether or not we're currently resolving a function.
+   * Defines whether or not we're currently resolving a function declaration.
    */
   private FunctionType currentFunction = FunctionType.NONE;
+
+  /**
+   * Defines whether or not we're currently resolving a class declaration.
+   */
+  private ClassType currentClass = ClassType.NONE;
 
   public Resolver(Interpreter interpreter) {
     this.interpreter = interpreter;
@@ -195,6 +211,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     if (stmt.value != null) {
+      if (currentFunction == FunctionType.INITIALIZER) {
+        JLox.error(stmt.keyword,
+            "Can't return a value from an initializer.");
+      }
       resolve(stmt.value);
     }
     return null;
@@ -244,6 +264,53 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   @Override
   public Void visitUnaryExpr(Unary expr) {
     resolve(expr.right);
+    return null;
+  }
+
+  @Override
+  public Void visitClassStmt(Class stmt) {
+    ClassType enclosingClass = currentClass;
+    currentClass = ClassType.CLASS;
+
+    declare(stmt.name);
+    define(stmt.name);
+    beginScope();
+    scopes.peek().put("this", true);
+    for (Stmt.Function method : stmt.methods) {
+      FunctionType declaration = FunctionType.METHOD;
+      if (method.name.lexeme.equals("init")) {
+        declaration = FunctionType.INITIALIZER;
+      }
+      resolveFunction(method, declaration);
+    }
+    endScope();
+
+    currentClass = enclosingClass;
+    return null;
+  }
+
+  @Override
+  public Void visitGetExpr(Get expr) {
+    resolve(expr.object);
+    return null;
+  }
+
+  @Override
+  public Void visitSetExpr(Set expr) {
+    resolve(expr.value);
+    resolve(expr.object);
+    return null;
+  }
+
+  @Override
+  public Void visitThisExpr(This expr) {
+    if (currentClass == ClassType.NONE) {
+      JLox.error(expr.keyword,
+          "Can't use 'this' outside of a class.");
+      return null;
+    }
+
+    resolveLocal(expr, expr.keyword);
     return null;
   }
 }

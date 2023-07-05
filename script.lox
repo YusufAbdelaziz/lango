@@ -34,13 +34,68 @@
 
 // print scope(10);
 
-var a = "global";
-{
-  fun showA() {
-    print a;
+// var a = "global";
+// {
+//   fun showA() {
+//     print a;
+//   }
+
+//   showA();
+//   var a = "block";
+//   showA();
+// }
+
+// class DevonshireCream {
+//   serveOn() {
+//     return "Scones";
+//   }
+// }
+
+// print DevonshireCream; // Prints "DevonshireCream".
+
+// class Bagel {}
+// var bagel = Bagel();
+// print bagel;
+// class Bacon {
+//   eat() {
+//     var a = "banana";
+//     print a;
+//   }
+// }
+
+// Bacon().eat(); // Prints "Crunch crunch crunch!".
+
+// print this;
+
+
+// class Cake {
+//   taste() {
+//     var adjective = "delicious";
+//     print "The " + this.flavor + " cake is " + adjective + "!";
+//   }
+// }
+
+// var cake = Cake();
+// cake.flavor = "German chocolate";
+// cake.taste();
+// fun notAMethod() {
+//   print this;
+// }
+// return;
+// print "hey";
+
+class Animal {
+  init(name, type, age) {
+    this.name = name;
+    this.type = type;
+    this.age = age;
   }
 
-  showA();
-  var a = "block";
-  showA();
+  printInfo() {
+    print "My name is " + this.name + " and my type is " + this.type + " and my age is " + this.age;
+  }
 }
+
+var cat = Animal("Tota", "Cat", 2.5);
+
+cat.printInfo();
