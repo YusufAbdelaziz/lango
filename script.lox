@@ -7,8 +7,101 @@
 //   print fib(i);
 // }
 
-// print "hey";
 
+
+//* Expression and Statement Evaluation.
+// print 9 * 5 + 5;
+
+// var a = 10;
+
+// print a;
+
+//* Scopes and Environments
+// var a = "global a";
+// var b = "global b";
+// var c = "global c";
+// {
+//   var a = "outer a";
+//   var b = "outer b";
+//   {
+//     var a = "inner a";
+//     print a;
+//     print b;
+//     print c;
+//   }
+//   print a;
+//   print b;
+//   print c;
+// }
+// print a;
+// print b;
+// print c;
+
+
+//* If statement
+
+// var i = 5;
+
+// if(i < 5){
+//   print i + " less than 5";
+// } else {
+//   print i + " bigger or equal than 5";
+// }
+
+// var x = 10; 
+// var y = 15;
+
+// if(x < 15 and y > 10)
+// {
+//   print "i am in first branch";
+// } else {
+//   print "i am in second branch";
+// }
+
+// var x = 16; 
+// var y = 15;
+
+// if(x < 15 and y > 10)
+// {
+//   print "i am in first branch";
+// } else {
+//   print "i am in second branch";
+// }
+
+
+//* While and for loop statements.
+// var i = 1;
+
+// while(i <= 5) {
+//  print  i; 
+//  i = i + 1;
+// }
+// var a = 0;
+// var temp;
+
+// for (var b = 1; a < 10000; b = temp + b) {
+//   print a;
+//   temp = a;
+//   a = b;
+// }
+// for (var i = 1; i <= 5; i = i + 1) {
+//   print i;
+// }
+
+
+
+///----------------------------------------------
+
+//* Functions
+
+// fun sum(a, b){
+//   return a + b;
+// }
+
+// var result = sum(1, 2);
+// print result;
+
+//* Closure
 // fun makeCounter() {
 //   var i = 0;
 //   fun count() {
@@ -23,16 +116,9 @@
 // counter(); // "1".
 // counter(); // "2".
 
-// fun scope(a) {
-//   var a = "local";
+///----------------------------------------------
 
-//   return a;
-// }
-
-// var a = 10;
-// var a = 60;
-
-// print scope(10);
+//* Resolver
 
 // var a = "global";
 // {
@@ -45,44 +131,13 @@
 //   showA();
 // }
 
-// class DevonshireCream {
-//   serveOn() {
-//     return "Scones";
-//   }
-// }
-
-// print DevonshireCream; // Prints "DevonshireCream".
-
-// class Bagel {}
-// var bagel = Bagel();
-// print bagel;
-// class Bacon {
-//   eat() {
-//     var a = "banana";
-//     print a;
-//   }
-// }
-
-// Bacon().eat(); // Prints "Crunch crunch crunch!".
-
+// Syntactic errors.
+// return;
 // print this;
 
+///----------------------------------------------
 
-// class Cake {
-//   taste() {
-//     var adjective = "delicious";
-//     print "The " + this.flavor + " cake is " + adjective + "!";
-//   }
-// }
-
-// var cake = Cake();
-// cake.flavor = "German chocolate";
-// cake.taste();
-// fun notAMethod() {
-//   print this;
-// }
-// return;
-// print "hey";
+//* Classes and constructors.
 
 // class Animal {
 //   init(name, type, age) {
@@ -94,45 +149,26 @@
 //   printInfo() {
 //     print "My name is " + this.name + " and my type is " + this.type + " and my age is " + this.age;
 //   }
+
+//   sound() {
+//     print "Generic animal sound";
+//   }
 // }
 
-// var cat = Animal("Tota", "Cat", 2.5);
+// var cat = Animal("Tota", "Cat", 4);
 
 // cat.printInfo();
 
-// class Doughnut {
-//   cook() {
-//     print "Fry until golden brown.";
+//* Inheritance.
+
+// class A {
+//   method() {
+//     print "A method";
 //   }
 // }
-
-// class BostonCream < Doughnut {}
-
-// BostonCream().cook();
-
-// class Doughnut {
-//   cook() {
-//     print "Fry until golden brown.";
-//   }
-// }
-
-// class BostonCream < Doughnut {
-//   cook() {
-//     super.cook();
-//     print "Pipe full of custard and coat with chocolate.";
-//   }
-// }
-
-// BostonCream().cook();
-
-class A {
-  method() {
-    print "A method";
-  }
-}
 
 // class B < A {
-//   init(testProp, testProp2){
+//   init(testProp, testProp2) {
 //     this.testProp = testProp;
 //     this.testProp2 = testProp2;
 //   }
@@ -147,16 +183,30 @@ class A {
 // }
 
 // class C < B {
-//   init() {
-//     super.init("test", "test from c");
+//   init(testParam1, testParam2) {
+//     super.init(testParam1, testParam2);
+//   }
+
+//   printCStuff() {
+//     print this.testProp;
+//     print this.testProp2;
 //   }
 // }
 
-// print C().testProp2;
+// var aObject = A();
 
-class Eclair {
-  cook() {
-    super.cook();
-    print "Pipe full of crème pâtissière.";
-  }
-}
+// aObject.method();
+
+// var c = C("test parameter 1", "test parameter 2");
+
+// print c.testProp2;
+
+// var method = c.test;
+
+// method();
+
+// c.printCStuff();
+
+
+
+print("Hola");

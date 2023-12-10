@@ -1,9 +1,9 @@
-package jlox.scanner;
+package lango.scanner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jlox.main.JLox;
+import lango.main.Lango;
 
 import java.util.*;
 
@@ -152,7 +152,7 @@ public class Scanner {
         } else if (isAlpha(c)) {
           identifier();
         } else {
-          JLox.error(line, "Unexpected character.");
+          Lango.error(line, "Unexpected character.");
         }
         break;
     }
@@ -272,7 +272,7 @@ public class Scanner {
     // If we reach the end of source file without closing double quote, then the
     // string is not terminated.
     if (isAtEnd()) {
-      JLox.error(line, "Unterminated string");
+      Lango.error(line, "Unterminated string");
     }
 
     // Moving [current] pointer after the closing double quote '"'.

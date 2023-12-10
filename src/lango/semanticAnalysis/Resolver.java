@@ -1,33 +1,25 @@
-package jlox;
+package lango.semanticAnalysis;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import jlox.Expr.Assign;
-import jlox.Expr.Binary;
-import jlox.Expr.Call;
-import jlox.Expr.Get;
-import jlox.Expr.Grouping;
-import jlox.Expr.Literal;
-import jlox.Expr.Logical;
-import jlox.Expr.Set;
-import jlox.Expr.Super;
-import jlox.Expr.This;
-import jlox.Expr.Unary;
-import jlox.Expr.Variable;
-import jlox.Stmt.Block;
-import jlox.Stmt.Class;
-import jlox.Stmt.Expression;
-import jlox.Stmt.Function;
-import jlox.Stmt.If;
-import jlox.Stmt.Print;
-import jlox.Stmt.Return;
-import jlox.Stmt.Var;
-import jlox.Stmt.While;
-import jlox.main.JLox;
-import jlox.scanner.Token;
+import lango.astNodes.Expr;
+import lango.astNodes.Stmt;
+import lango.astNodes.Expr.*;
+import lango.astNodes.Stmt.Block;
+import lango.astNodes.Stmt.Class;
+import lango.astNodes.Stmt.Expression;
+import lango.astNodes.Stmt.Function;
+import lango.astNodes.Stmt.If;
+import lango.astNodes.Stmt.Print;
+import lango.astNodes.Stmt.Return;
+import lango.astNodes.Stmt.Var;
+import lango.astNodes.Stmt.While;
+import lango.interpreter.Interpreter;
+import lango.main.Lango;
+import lango.scanner.Token;
 
 public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
@@ -117,7 +109,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     Map<String, Boolean> scope = scopes.peek();
 
     if (scope.containsKey(name.lexeme)) {
-      JLox.error(name,
+      Lango.error(name,
           "Already a variable with this name in this scope.");
     }
     scope.put(name.lexeme, false);
@@ -145,7 +137,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     // var a = 10;
     // var x = a;
     if (!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
-      JLox.error(expr.name,
+      Lango.error(expr.name,
           "Can't read local variable in its own initializer.");
     }
 
@@ -209,12 +201,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   @Override
   public Void visitReturnStmt(Return stmt) {
     if (currentFunction == FunctionType.NONE) {
-      JLox.error(stmt.keyword, "Can't return from top-level code.");
+      Lango.error(stmt.keyword, "Can't return from top-level code.");
     }
 
     if (stmt.value != null) {
       if (currentFunction == FunctionType.INITIALIZER) {
-        JLox.error(stmt.keyword,
+        Lango.error(stmt.keyword,
             "Can't return a value from an initializer.");
       }
       resolve(stmt.value);
@@ -279,7 +271,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
     if (stmt.superclass != null &&
         stmt.name.lexeme.equals(stmt.superclass.name.lexeme)) {
-      JLox.error(stmt.superclass.name,
+      Lango.error(stmt.superclass.name,
           "A class can't inherit from itself.");
     }
 
@@ -329,10 +321,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitSuperExpr(Super expr) {
 
     if (currentClass == ClassType.NONE) {
-      JLox.error(expr.keyword,
+      Lango.error(expr.keyword,
           "Can't use 'super' outside of a class.");
     } else if (currentClass != ClassType.SUBCLASS) {
-      JLox.error(expr.keyword,
+      Lango.error(expr.keyword,
           "Can't use 'super' in a class with no superclass.");
     }
 
@@ -343,7 +335,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   @Override
   public Void visitThisExpr(This expr) {
     if (currentClass == ClassType.NONE) {
-      JLox.error(expr.keyword,
+      Lango.error(expr.keyword,
           "Can't use 'this' outside of a class.");
       return null;
     }

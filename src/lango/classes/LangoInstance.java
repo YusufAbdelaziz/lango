@@ -1,25 +1,26 @@
-package jlox;
+package lango.classes;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import jlox.parser.RuntimeError;
-import jlox.scanner.Token;
+import lango.functions.LangoFunction;
+import lango.parser.RuntimeError;
+import lango.scanner.Token;
 
-class LoxInstance {
-  private LoxClass klass;
+public class LangoInstance {
+  private LangoClass klass;
   private final Map<String, Object> fields = new HashMap<>();
 
-  LoxInstance(LoxClass klass) {
+  LangoInstance(LangoClass klass) {
     this.klass = klass;
   }
 
-  Object get(Token name) {
+  public Object get(Token name) {
     if (fields.containsKey(name.lexeme)) {
       return fields.get(name.lexeme);
     }
 
-    LoxFunction method = klass.findMethod(name.lexeme);
+    LangoFunction method = klass.findMethod(name.lexeme);
     if (method != null)
       return method.bind(this);
 
@@ -27,7 +28,7 @@ class LoxInstance {
         "Undefined property '" + name.lexeme + "'.");
   }
 
-  void set(Token name, Object value) {
+  public void set(Token name, Object value) {
     fields.put(name.lexeme, value);
   }
 

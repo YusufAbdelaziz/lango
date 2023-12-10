@@ -1,4 +1,4 @@
-package jlox.scanner;
+package lango.scanner;
 
 public enum TokenType {
   // Single character tokens.

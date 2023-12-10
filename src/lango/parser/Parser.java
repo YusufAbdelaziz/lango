@@ -1,12 +1,14 @@
-package jlox.parser;
+package lango.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 
-import jlox.scanner.*;
-import jlox.*;
-import jlox.main.JLox;
+import lango.astNodes.Stmt;
+import lango.astNodes.Expr;
+import lango.main.Lango;
+import lango.scanner.*;
+
+import java.util.Arrays;
 
 /**
  * Constructs the syntax tree from our language's grammar.
@@ -28,7 +30,7 @@ import jlox.main.JLox;
  * statement → exprStmt
  * | returnStmt
  * | forStmt
- * | printStm*
+ * | printStmt
  * | block
  * | ifStmt
  * | whileStmt;
@@ -203,6 +205,15 @@ public class Parser {
     return new Stmt.Return(keyword, value);
   }
 
+  private Stmt whileStatement() {
+    consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+    Expr condition = expression();
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
+    Stmt body = statement();
+
+    return new Stmt.While(condition, body);
+  }
+
   private Stmt forStatement() {
     consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
 
@@ -233,8 +244,7 @@ public class Parser {
     Stmt body = statement();
 
     // If increment is not null, we create a block of statements where the increment
-    // statement should be the last
-    // statement to be executed after each iteration.
+    // statement should be the last statement to be executed after each iteration.
     if (increment != null) {
       body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
     }
@@ -254,15 +264,6 @@ public class Parser {
     }
 
     return body;
-  }
-
-  private Stmt whileStatement() {
-    consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
-    Expr condition = expression();
-    consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
-    Stmt body = statement();
-
-    return new Stmt.While(condition, body);
   }
 
   private Stmt ifStatement() {
@@ -578,7 +579,7 @@ public class Parser {
   }
 
   private ParseError error(Token token, String message) {
-    JLox.error(token, message);
+    Lango.error(token, message);
     return new ParseError();
   }
 

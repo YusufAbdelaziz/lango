@@ -1,8 +1,14 @@
-package jlox;
+package lango.functions;
 
 import java.util.List;
 
-public class LoxFunction implements LoxCallable {
+import lango.Environment;
+import lango.classes.LangoInstance;
+import lango.Return;
+import lango.astNodes.Stmt;
+import lango.interpreter.Interpreter;
+
+public class LangoFunction implements LangoCallable {
 
   private final Stmt.Function declaration;
   /**
@@ -12,18 +18,18 @@ public class LoxFunction implements LoxCallable {
   private final Environment closure;
   private final boolean isInitializer;
 
-  LoxFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
+  public LangoFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
     this.isInitializer = isInitializer;
     this.declaration = declaration;
     this.closure = closure;
 
   }
 
-  LoxFunction bind(LoxInstance instance) {
+  public LangoFunction bind(LangoInstance instance) {
     /// A closure is created to capture the "this" within the closure.
     Environment environment = new Environment(closure);
     environment.define("this", instance);
-    return new LoxFunction(declaration, environment, isInitializer);
+    return new LangoFunction(declaration, environment, isInitializer);
   }
 
   @Override

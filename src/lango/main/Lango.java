@@ -1,4 +1,4 @@
-package jlox.main;
+package lango.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,16 +9,16 @@ import java.nio.file.Path;
 // import java.nio.file.Paths;
 import java.util.List;
 
-import jlox.Interpreter;
-import jlox.Stmt;
-import jlox.parser.Parser;
-import jlox.parser.RuntimeError;
-import jlox.scanner.Scanner;
-import jlox.scanner.Token;
-import jlox.scanner.TokenType;
-import jlox.Resolver;
+import lango.astNodes.Stmt;
+import lango.interpreter.Interpreter;
+import lango.parser.Parser;
+import lango.parser.RuntimeError;
+import lango.scanner.Scanner;
+import lango.scanner.Token;
+import lango.scanner.TokenType;
+import lango.semanticAnalysis.Resolver;
 
-public class JLox {
+public class Lango {
   private static final Interpreter interpreter = new Interpreter();
 
   /**
@@ -29,7 +29,7 @@ public class JLox {
 
   public static void main(String[] args) throws IOException {
     if (args.length > 1) {
-      System.out.println("Usage: jlox [script]");
+      System.out.println("Usage: lango [script]");
       System.exit(64);
     } else if (args.length == 1) {
       runFile(args[0]);

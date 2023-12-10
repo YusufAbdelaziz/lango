@@ -1,17 +1,17 @@
-package jlox;
+package lango;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import jlox.parser.RuntimeError;
-import jlox.scanner.Token;
+import lango.parser.RuntimeError;
+import lango.scanner.Token;
 
 public class Environment {
 
   /**
    * Reference for the enclosing environment.
    */
-  final Environment enclosing;
+  public final Environment enclosing;
 
   /**
    * No-argument constructor for the global environment.
@@ -38,11 +38,11 @@ public class Environment {
    */
   private final Map<String, Object> values = new HashMap<>();
 
-  void define(String name, Object value) {
+  public void define(String name, Object value) {
     values.put(name, value);
   }
 
-  Object get(Token name) {
+  public Object get(Token name) {
     if (values.containsKey(name.lexeme)) {
       return values.get(name.lexeme);
     }
@@ -67,7 +67,7 @@ public class Environment {
     return environment;
   }
 
-  void assign(Token name, Object value) {
+  public void assign(Token name, Object value) {
     if (values.containsKey(name.lexeme)) {
       values.put(name.lexeme, value);
       return;

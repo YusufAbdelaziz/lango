@@ -1,6 +1,6 @@
-package jlox.parser;
+package lango.parser;
 
-import jlox.scanner.Token;
+import lango.scanner.Token;
 
 public class RuntimeError extends RuntimeException {
   public final Token token;

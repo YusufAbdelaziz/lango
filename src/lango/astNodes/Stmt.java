@@ -1,10 +1,10 @@
-package jlox;
+package lango.astNodes;
 
 import java.util.List;
-import jlox.scanner.Token;
+import lango.scanner.Token;
 
 public abstract class Stmt {
-  interface Visitor<R> {
+  public interface Visitor<R> {
     R visitBlockStmt(Block stmt);
 
     R visitClassStmt(Class stmt);
@@ -24,7 +24,7 @@ public abstract class Stmt {
     R visitWhileStmt(While stmt);
   }
 
-  abstract <R> R accept(Visitor<R> visitor);
+  public abstract <R> R accept(Visitor<R> visitor);
 
   public static class Block extends Stmt {
     public Block(List<Stmt> statements) {
@@ -32,7 +32,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitBlockStmt(this);
     }
 
@@ -47,7 +47,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitClassStmt(this);
     }
 
@@ -62,7 +62,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitExpressionStmt(this);
     }
 
@@ -77,7 +77,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitFunctionStmt(this);
     }
 
@@ -94,7 +94,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitIfStmt(this);
     }
 
@@ -109,7 +109,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitPrintStmt(this);
     }
 
@@ -123,7 +123,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitReturnStmt(this);
     }
 
@@ -138,7 +138,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitVarStmt(this);
     }
 
@@ -153,7 +153,7 @@ public abstract class Stmt {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitWhileStmt(this);
     }
 

@@ -1,8 +1,10 @@
-package jlox;
+package lango.functions;
 
 import java.util.List;
 
-public interface LoxCallable {
+import lango.interpreter.Interpreter;
+
+public interface LangoCallable {
 
   Object call(Interpreter interpreter, List<Object> arguments);
 

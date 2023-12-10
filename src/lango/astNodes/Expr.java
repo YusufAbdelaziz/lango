@@ -1,10 +1,10 @@
-package jlox;
+package lango.astNodes;
 
 import java.util.List;
-import jlox.scanner.Token;
+import lango.scanner.Token;
 
 public abstract class Expr {
-  interface Visitor<R> {
+  public interface Visitor<R> {
     R visitAssignExpr(Assign expr);
 
     R visitBinaryExpr(Binary expr);
@@ -30,7 +30,7 @@ public abstract class Expr {
     R visitVariableExpr(Variable expr);
   }
 
-  abstract <R> R accept(Visitor<R> visitor);
+  public abstract <R> R accept(Visitor<R> visitor);
 
   public static class Assign extends Expr {
     public Assign(Token name, Expr value) {
@@ -39,7 +39,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitAssignExpr(this);
     }
 
@@ -55,7 +55,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitBinaryExpr(this);
     }
 
@@ -72,7 +72,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitCallExpr(this);
     }
 
@@ -88,7 +88,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitGetExpr(this);
     }
 
@@ -104,7 +104,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitSetExpr(this);
     }
 
@@ -120,7 +120,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitSuperExpr(this);
     }
 
@@ -134,7 +134,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitThisExpr(this);
     }
 
@@ -147,7 +147,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitGroupingExpr(this);
     }
 
@@ -160,7 +160,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitLiteralExpr(this);
     }
 
@@ -175,7 +175,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitLogicalExpr(this);
     }
 
@@ -191,7 +191,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitUnaryExpr(this);
     }
 
@@ -205,7 +205,7 @@ public abstract class Expr {
     }
 
     @Override
-    <R> R accept(Visitor<R> visitor) {
+    public <R> R accept(Visitor<R> visitor) {
       return visitor.visitVariableExpr(this);
     }
 

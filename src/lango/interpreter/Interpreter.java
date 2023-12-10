@@ -1,17 +1,24 @@
-package jlox;
+package lango.interpreter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jlox.Expr.*;
-import jlox.Stmt.*;
-import jlox.Stmt.Class;
-import jlox.main.JLox;
-import jlox.scanner.Token;
-import jlox.scanner.TokenType;
-import jlox.parser.*;
+import lango.Environment;
+import lango.classes.LangoClass;
+import lango.classes.LangoInstance;
+import lango.Return;
+import lango.astNodes.Expr;
+import lango.functions.LangoCallable;
+import lango.functions.LangoFunction;
+import lango.astNodes.Stmt;
+import lango.astNodes.Expr.*;
+import lango.astNodes.Stmt.*;
+import lango.main.Lango;
+import lango.parser.*;
+import lango.scanner.Token;
+import lango.scanner.TokenType;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
@@ -31,7 +38,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   private Environment environment = globals;
 
   public Interpreter() {
-    globals.define("clock", new LoxCallable() {
+    defineGlobalFunctions();
+  }
+
+  private void defineGlobalFunctions() {
+    globals.define("clock", new LangoCallable() {
 
       @Override
       public Object call(Interpreter interpreter, List<Object> arguments) {
@@ -48,6 +59,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return "native function";
       }
     });
+
+    globals.define("print", new LangoCallable() {
+
+      @Override
+      public Object call(Interpreter interpreter, List<Object> arguments) {
+        System.out.println(arguments.get(0));
+        return null;
+      }
+
+      @Override
+      public int arity() {
+        return 1;
+      }
+
+      @Override
+      public String toString() {
+        return "native function";
+      }
+    });
   }
 
   public void interpret(List<Stmt> statements) {
@@ -56,7 +86,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         execute(statement);
       }
     } catch (RuntimeError error) {
-      JLox.runtimeError(error);
+      Lango.runtimeError(error);
     }
   }
 
@@ -64,7 +94,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     stmt.accept(this);
   }
 
-  void resolve(Expr expr, int depth) {
+  public void resolve(Expr expr, int depth) {
     locals.put(expr, depth);
   }
 
@@ -274,11 +304,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   }
 
   @Override
-  public Void visitClassStmt(Class stmt) {
+  public Void visitClassStmt(Stmt.Class stmt) {
     Object superclass = null;
     if (stmt.superclass != null) {
       superclass = evaluate(stmt.superclass);
-      if (!(superclass instanceof LoxClass)) {
+      if (!(superclass instanceof LangoClass)) {
         throw new RuntimeError(stmt.superclass.name,
             "Superclass must be a class.");
       }
@@ -291,13 +321,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       environment.define("super", superclass);
     }
 
-    Map<String, LoxFunction> methods = new HashMap<>();
+    Map<String, LangoFunction> methods = new HashMap<>();
     for (Stmt.Function method : stmt.methods) {
-      LoxFunction function = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
+      LangoFunction function = new LangoFunction(method, environment, method.name.lexeme.equals("init"));
       methods.put(method.name.lexeme, function);
     }
 
-    LoxClass klass = new LoxClass(stmt.name.lexeme, (LoxClass) superclass, methods);
+    LangoClass klass = new LangoClass(stmt.name.lexeme, (LangoClass) superclass, methods);
 
     if (superclass != null) {
       environment = environment.enclosing;
@@ -349,27 +379,27 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitSetExpr(Set expr) {
     Object object = evaluate(expr.object);
 
-    if (!(object instanceof LoxInstance)) {
+    if (!(object instanceof LangoInstance)) {
       throw new RuntimeError(expr.name,
           "Only instances have fields.");
     }
 
     Object value = evaluate(expr.value);
 
-    ((LoxInstance) object).set(expr.name, value);
+    ((LangoInstance) object).set(expr.name, value);
     return value;
   }
 
   @Override
   public Object visitSuperExpr(Super expr) {
     int distance = locals.get(expr);
-    LoxClass superclass = (LoxClass) environment.getAt(
+    LangoClass superclass = (LangoClass) environment.getAt(
         distance, "super");
 
-    LoxInstance object = (LoxInstance) environment.getAt(
+    LangoInstance object = (LangoInstance) environment.getAt(
         distance - 1, "this");
 
-    LoxFunction method = superclass.findMethod(expr.method.lexeme);
+    LangoFunction method = superclass.findMethod(expr.method.lexeme);
 
     if (method == null) {
       throw new RuntimeError(expr.method,
@@ -402,11 +432,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
       arguments.add(evaluate(argument));
     }
 
-    if (!(callee instanceof LoxCallable)) {
+    if (!(callee instanceof LangoCallable)) {
       throw new RuntimeError(expr.paren, "Can only call functions and classes");
     }
 
-    LoxCallable function = (LoxCallable) callee;
+    LangoCallable function = (LangoCallable) callee;
 
     if (arguments.size() != function.arity()) {
       throw new RuntimeError(expr.paren, "Expected " +
@@ -420,8 +450,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Object visitGetExpr(Get expr) {
     Object object = evaluate(expr.object);
 
-    if (object instanceof LoxInstance) {
-      return ((LoxInstance) object).get(expr.name);
+    if (object instanceof LangoInstance) {
+      return ((LangoInstance) object).get(expr.name);
     }
 
     throw new RuntimeError(expr.name, "Only instances have properties.");
@@ -429,7 +459,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitFunctionStmt(Function stmt) {
-    LoxFunction function = new LoxFunction(stmt, environment, false);
+    LangoFunction function = new LangoFunction(stmt, environment, false);
     environment.define(stmt.name.lexeme, function);
     return null;
   }
