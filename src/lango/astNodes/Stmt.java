@@ -15,6 +15,8 @@ public abstract class Stmt {
 
     R visitIfStmt(If stmt);
 
+    R visitElifStmt(Elif stmt);
+
     R visitPrintStmt(Print stmt);
 
     R visitReturnStmt(Return stmt);
@@ -87,9 +89,10 @@ public abstract class Stmt {
   }
 
   public static class If extends Stmt {
-    public If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
+    public If(Expr condition, Stmt thenBranch, List<Elif> elseIfBranches, Stmt elseBranch) {
       this.condition = condition;
       this.thenBranch = thenBranch;
+      this.elseIfBranches = elseIfBranches;
       this.elseBranch = elseBranch;
     }
 
@@ -100,7 +103,23 @@ public abstract class Stmt {
 
     public final Expr condition;
     public final Stmt thenBranch;
+    public final List<Elif> elseIfBranches;
     public final Stmt elseBranch;
+  }
+
+  public static class Elif extends Stmt {
+    public Elif(Expr condition, Stmt body) {
+      this.condition = condition;
+      this.body = body;
+    }
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitElifStmt(this);
+    }
+
+    public final Expr condition;
+    public final Stmt body;
   }
 
   public static class Print extends Stmt {

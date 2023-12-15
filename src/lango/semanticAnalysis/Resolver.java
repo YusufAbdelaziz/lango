@@ -10,6 +10,7 @@ import lango.astNodes.Stmt;
 import lango.astNodes.Expr.*;
 import lango.astNodes.Stmt.Block;
 import lango.astNodes.Stmt.Class;
+import lango.astNodes.Stmt.Elif;
 import lango.astNodes.Stmt.Expression;
 import lango.astNodes.Stmt.Function;
 import lango.astNodes.Stmt.If;
@@ -187,8 +188,19 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
   public Void visitIfStmt(If stmt) {
     resolve(stmt.condition);
     resolve(stmt.thenBranch);
+    for (Elif elif : stmt.elseIfBranches) {
+      resolve(elif);
+    }
     if (stmt.elseBranch != null)
       resolve(stmt.elseBranch);
+    return null;
+  }
+
+  @Override
+
+  public Void visitElifStmt(Elif stmt) {
+    resolve(stmt.condition);
+    resolve(stmt.body);
     return null;
   }
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lango.astNodes.Stmt;
+import lango.astNodes.Stmt.Elif;
 import lango.astNodes.Expr;
 import lango.main.Lango;
 import lango.scanner.*;
@@ -40,7 +41,8 @@ import java.util.Arrays;
  * forStmt -> "for" "(" (varDecl | exprStmt | ";") expression? ";" expression?
  * ")" statement ;
  * whileStmt -> "while" "(" expression ")" statement;
- * ifStmt -> "if" "(" expression ")" statement ("else" statement)?;
+ * ifStmt -> "if" "(" expression ")" statement (elif)* ("else" statement)?;
+ * elif -> "elif" "(" expression ")";
  * block → "{" declaration* "}" ;
  * exprStmt → expression ";" ;
  * printStmt → "print" expression ";" ;
@@ -273,12 +275,22 @@ public class Parser {
     consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
 
     Stmt thenBranch = statement();
+    List<Elif> elseIfBranches = new ArrayList<>();
+
+    while (match(TokenType.ELSEIF)) {
+      consume(TokenType.LEFT_PAREN, "Expect '(' after 'elif'.");
+      Expr elifCondition = expression();
+      consume(TokenType.RIGHT_PAREN, "Expect ')' after elif condition.");
+      elseIfBranches.add(new Elif(elifCondition, statement()));
+    }
+
     Stmt elseBranch = null;
+
     if (match(TokenType.ELSE)) {
       elseBranch = statement();
     }
 
-    return new Stmt.If(condition, thenBranch, elseBranch);
+    return new Stmt.If(condition, thenBranch, elseIfBranches, elseBranch);
   }
 
   private List<Stmt> block() {

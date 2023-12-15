@@ -354,10 +354,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Void visitIfStmt(If stmt) {
     if (isTruthy(evaluate(stmt.condition))) {
       execute(stmt.thenBranch);
+    } else if (!stmt.elseIfBranches.isEmpty()) {
+      for (Elif elseIfStatement : stmt.elseIfBranches) {
+        if (isTruthy(evaluate(elseIfStatement.condition))) {
+          execute(elseIfStatement.body);
+          break;
+        }
+      }
     } else if (stmt.elseBranch != null) {
       execute(stmt.elseBranch);
     }
 
+    return null;
+  }
+
+  @Override
+  public Void visitElifStmt(Elif stmt) {
+    if (isTruthy(stmt.condition))
+      execute(stmt.body);
     return null;
   }
 
@@ -472,4 +486,5 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     throw new Return(value);
   }
+
 }
