@@ -50,6 +50,7 @@ public class Scanner {
     keywords.put("if", TokenType.IF);
     keywords.put("elif", TokenType.ELSEIF);
     keywords.put("nil", TokenType.NIL);
+    keywords.put("break", TokenType.BREAK);
     keywords.put("or", TokenType.OR);
     keywords.put("print", TokenType.PRINT);
     keywords.put("return", TokenType.RETURN);

@@ -41,6 +41,7 @@ public class GenerateAst {
             "Elif  : Expr condition, Stmt body",
             "Print : Expr expression",
             "Return: Token keyword, Expr value",
+            "Break: Token keyword",
             "Var   : Token name, Expr initializer",
             "While : Expr condition, Stmt body"));
 

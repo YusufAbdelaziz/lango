@@ -40,20 +40,20 @@
 
 //* If statement
 
-var i = 5;
+// var i = 5;
 
-if(i >= 5) {
-  print i + " less than 5";
-} elif( i > 5) {
+// if(i >= 5) {
+//   print i + " less than 5";
+// } elif( i > 5) {
 
-  print i + " equal to 5";
+//   print i + " equal to 5";
 
-} elif(i <= 5) {
-  print i + " equal to  x22";
+// } elif(i <= 5) {
+//   print i + " equal to  x22";
 
-} else {
-  print i + " bigger or equal than 5";
-}
+// } else {
+//   print i + " bigger or equal than 5";
+// }
 
 // var x = 10; 
 // var y = 15;
@@ -77,12 +77,13 @@ if(i >= 5) {
 
 
 //* While and for loop statements.
-// var i = 1;
+var i = 1;
 
-// while(i <= 5) {
-//  print  i; 
-//  i = i + 1;
-// }
+while(i <= 5) {
+ print  i; 
+ if(i == 4) break;
+ i = i + 1;
+}
 // var a = 0;
 // var temp;
 

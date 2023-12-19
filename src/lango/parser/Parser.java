@@ -34,7 +34,8 @@ import java.util.Arrays;
  * | printStmt
  * | block
  * | ifStmt
- * | whileStmt;
+ * | whileStmt
+ * | break;
  * 
  * returnStmt -> "return" expression? ";";
  * 
@@ -185,12 +186,21 @@ public class Parser {
       return whileStatement();
     if (match(TokenType.RETURN))
       return returnStatement();
+    if (match(TokenType.BREAK))
+      return breakStatement();
     if (match(TokenType.PRINT))
       return printStatement();
     if (match(TokenType.LEFT_BRACE))
       return new Stmt.Block(block());
 
     return expressionStatement();
+  }
+
+  private Stmt breakStatement() {
+    Token keyword = previous();
+    consume(TokenType.SEMICOLON, "Expect ';' after break statement.");
+
+    return new Stmt.Break(keyword);
   }
 
   private Stmt returnStatement() {

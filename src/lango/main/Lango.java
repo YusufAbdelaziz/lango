@@ -102,10 +102,6 @@ public class Lango {
       return;
 
     interpreter.interpret(statements);
-    // System.out.println(new AstPrinter().print(expression));
-    // for (Token token : tokens) {
-    // System.out.println(token);
-    // }
   }
 
   // TODO : Add the beginning and end column.

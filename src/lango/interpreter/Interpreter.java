@@ -9,6 +9,7 @@ import lango.Environment;
 import lango.classes.LangoClass;
 import lango.classes.LangoInstance;
 import lango.Return;
+import lango.Break;
 import lango.astNodes.Expr;
 import lango.functions.LangoCallable;
 import lango.functions.LangoFunction;
@@ -431,7 +432,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   @Override
   public Void visitWhileStmt(Stmt.While stmt) {
     while (isTruthy(evaluate(stmt.condition))) {
-      execute(stmt.body);
+      try {
+        execute(stmt.body);
+      } catch (Break b) {
+        break;
+      }
     }
     return null;
   }
@@ -487,4 +492,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     throw new Return(value);
   }
 
+  @Override
+  public Void visitBreakStmt(Stmt.Break stmt) {
+    throw new Break();
+  }
 }

@@ -9,6 +9,7 @@ import lango.astNodes.Expr;
 import lango.astNodes.Stmt;
 import lango.astNodes.Expr.*;
 import lango.astNodes.Stmt.Block;
+import lango.astNodes.Stmt.Break;
 import lango.astNodes.Stmt.Class;
 import lango.astNodes.Stmt.Elif;
 import lango.astNodes.Stmt.Expression;
@@ -57,6 +58,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
    * Defines whether or not we're currently resolving a class declaration.
    */
   private ClassType currentClass = ClassType.NONE;
+
+  private boolean isInLoop = false;
 
   public Resolver(Interpreter interpreter) {
     this.interpreter = interpreter;
@@ -228,6 +231,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
   @Override
   public Void visitWhileStmt(While stmt) {
+    isInLoop = true;
     resolve(stmt.condition);
     resolve(stmt.body);
     return null;
@@ -353,6 +357,17 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     resolveLocal(expr, expr.keyword);
+    return null;
+  }
+
+  @Override
+  public Void visitBreakStmt(Break stmt) {
+    if (!isInLoop) {
+      Lango.error(stmt.keyword,
+          "Can't use 'break' outside of a loop.");
+    }
+
+    isInLoop = false;
     return null;
   }
 }
