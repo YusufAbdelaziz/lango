@@ -496,4 +496,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   public Void visitBreakStmt(Stmt.Break stmt) {
     throw new Break();
   }
+
+  @Override
+  public Object visitAnonymousFuncExpr(AnonymousFunc expr) {
+    return new LangoFunction(new Stmt.Function(null, expr.params, expr.body), environment, false);
+  }
 }

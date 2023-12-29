@@ -77,13 +77,13 @@
 
 
 //* While and for loop statements.
-var i = 1;
+// var i = 1;
 
-while(i <= 5) {
- print  i; 
- if(i == 4) break;
- i = i + 1;
-}
+// while(i <= 5) {
+//  print i; 
+//  if(i == 4) break;
+//  i = i + 1;
+// }
 // var a = 0;
 // var temp;
 
@@ -108,6 +108,19 @@ while(i <= 5) {
 
 // var result = sum(1, 2);
 // print result;
+
+fun printer(function, n1, n2) {
+  print(function(n1, n2));
+}
+
+printer( fun(n1, n2) {
+  return n1 + n2;
+  }, 4, 5);
+
+printer( fun(n1, n2) {
+  return n1 * n2;
+  }, 4, 5);
+
 
 //* Closure
 // fun makeCounter() {

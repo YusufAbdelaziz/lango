@@ -29,7 +29,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     NONE,
     FUNCTION,
     INITIALIZER,
-    METHOD
+    METHOD,
+    ANONYMOUS
   }
 
   private enum ClassType {
@@ -368,6 +369,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     }
 
     isInLoop = false;
+    return null;
+  }
+
+  @Override
+  public Void visitAnonymousFuncExpr(AnonymousFunc expr) {
+    resolveFunction(new Stmt.Function(null, expr.params, expr.body), FunctionType.ANONYMOUS);
     return null;
   }
 }

@@ -48,7 +48,11 @@ import java.util.Arrays;
  * exprStmt → expression ";" ;
  * printStmt → "print" expression ";" ;
  * 
- * arguments -> expression ( "," expression )* ;
+ * anonymousFunc -> "fun" "(" parameters? ")" block;
+ * 
+ * arguments -> (expression | anonymousFunc) ( "," (expression |
+ * anonymousFunc))* ;
+ * 
  * expression → assignment;
  * assignment -> (call ".")? IDENTIFIER "=" assignment | logic_or;
  * 
@@ -140,7 +144,7 @@ public class Parser {
   }
 
   private Stmt.Function function(String kind) {
-    Token name = consume(TokenType.IDENTIFIER, "Expect a" + kind + " name.");
+    Token name = consume(TokenType.IDENTIFIER, "Expect a " + kind + " name.");
 
     consume(TokenType.LEFT_PAREN, "Expect '(' after a " + kind + " name.");
 
@@ -157,7 +161,7 @@ public class Parser {
       } while (match(TokenType.COMMA));
     }
 
-    consume(TokenType.RIGHT_PAREN, "Expect '(' after a " + kind + " name.");
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after a " + kind + " name.");
 
     consume(TokenType.LEFT_BRACE, "Expect '{' before a " + kind + " body.");
 
@@ -331,8 +335,35 @@ public class Parser {
   }
 
   private Expr expression() {
-
+    if (match(TokenType.FUN)) {
+      return anonymousFunc();
+    }
     return assignment();
+  }
+
+  private Expr anonymousFunc() {
+    consume(TokenType.LEFT_PAREN, "Expected '(' after 'fun' keyword for an anonymous function");
+    List<Token> parameters = new ArrayList<>();
+
+    if (!check(TokenType.RIGHT_PAREN)) {
+
+      do {
+        if (parameters.size() >= 255) {
+          error(peek(), "Can't have more than 255 parameters.");
+        }
+
+        var parameter = consume(TokenType.IDENTIFIER, "Expect parameter name.");
+        parameters.add(parameter);
+      } while (match(TokenType.COMMA));
+    }
+
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after an anonymous function declaration .");
+
+    consume(TokenType.LEFT_BRACE, "Expect '{' before an anonymous function body.");
+
+    List<Stmt> body = block();
+
+    return new Expr.AnonymousFunc(parameters, body);
   }
 
   private Expr assignment() {
@@ -470,7 +501,8 @@ public class Parser {
         if (arguments.size() >= 255) {
           error(peek(), "Can't have more than 255 arguments.");
         }
-        arguments.add(expression());
+        var argument = expression();
+        arguments.add(argument);
       } while (match(TokenType.COMMA));
     }
 

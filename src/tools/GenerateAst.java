@@ -21,6 +21,7 @@ public class GenerateAst {
         Arrays.asList("Assign : Token name, Expr value",
             "Binary : Expr left, Token operator, Expr right",
             "Call: Expr callee, Token paren, List<Expr> arguments",
+            "AnonymousFunc : List<Token> params, List<Stmt> body",
             "Get : Expr object, Token name",
             "Set : Expr object, Token name, Expr value",
             "Super : Token keyword, Token method",
