@@ -17,7 +17,7 @@ My first try into understanding how interpreters and compilers work with the hel
 
 ## How to run a Lango script
 
-Type `bash ./bin/compileAndRunScript` so you can execute `script.lango` file.
+Run `bash ./bin/compileAndRunScript` command in the terminal so you can execute `script.lango` file.
 
 ## Snippets
 
