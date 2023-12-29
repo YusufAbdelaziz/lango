@@ -109,17 +109,17 @@
 // var result = sum(1, 2);
 // print result;
 
-fun printer(function, n1, n2) {
-  print(function(n1, n2));
-}
+// fun printer(function, n1, n2) {
+//   print(function(n1, n2));
+// }
 
-printer( fun(n1, n2) {
-  return n1 + n2;
-  }, 4, 5);
+// printer( fun(n1, n2) {
+//   return n1 + n2;
+//   }, 4, 5);
 
-printer( fun(n1, n2) {
-  return n1 * n2;
-  }, 4, 5);
+// printer( fun(n1, n2) {
+//   return n1 * n2;
+//   }, 4, 5);
 
 
 //* Closure

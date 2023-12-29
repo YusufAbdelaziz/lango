@@ -28,17 +28,15 @@ public class Lango {
   static boolean hadRuntimeError = false;
 
   public static void main(String[] args) throws IOException {
-    // TODO -> Uncomment these.
-    // if (args.length > 1) {
-    // System.out.println("Usage: lango [script]");
-    // System.exit(64);
-    // } else if (args.length == 1) {
-    // runFile(args[0]);
-    runFile("C:\\Users\\yusse\\Desktop\\lango\\script.lox");
-    // } else {
-    // // Run the REPL.
-    // runPrompt();
-    // }
+    if (args.length > 1) {
+      System.out.println("Usage: lango [script]");
+      System.exit(64);
+    } else if (args.length == 1) {
+      runFile(args[0]);
+    } else {
+      // Run the REPL.
+      runPrompt();
+    }
   }
 
   /**
